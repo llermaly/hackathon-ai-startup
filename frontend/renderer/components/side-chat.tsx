@@ -5,7 +5,7 @@ import { scenarioClassName, scenarioImg } from "./chat";
 import { VscGithubAction } from "react-icons/vsc";
 
 interface SideChatProps {
-  handleSubmitMessage: (message: string) => void;
+  handleSubmitMessage: (message: string, aliasMessage?: string) => void;
   tab: string;
   setTab: (tab: string) => void;
 }
@@ -237,7 +237,7 @@ const SideChat = (props: SideChatProps) => {
               <ActionItem
                 key={index}
                 {...ac}
-                onClick={() => props.handleSubmitMessage(ac.prompt)}
+                onClick={() => props.handleSubmitMessage(ac.prompt, ac.text)}
                 onDelete={() => {
                   const actions = quickActions.filter(
                     (action) => action.name !== ac.name

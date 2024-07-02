@@ -123,10 +123,13 @@ const Chat = () => {
   const [citedMessage, setCitedMessage] = React.useState<string>("");
   const [scenario, setScenario] = React.useState<string>("");
 
-  const handleSubmitMessage = (message: string) => {
+  const handleSubmitMessage = (message: string, aliasMessage?: string) => {
     if (!message) return;
 
-    setMessages((prev) => [...prev, { text: message, type: "user" }]);
+    setMessages((prev) => [
+      ...prev,
+      { text: aliasMessage ? aliasMessage : message, type: "user" },
+    ]);
 
     try {
       const lastMessagesStr = localStorage.getItem("lastMessages") || "[]";
@@ -185,7 +188,7 @@ const Chat = () => {
     <>
       <SideChat
         key={updateSideChat}
-        handleSubmitMessage={(m) => handleSubmitMessage(m)}
+        handleSubmitMessage={(m, a) => handleSubmitMessage(m, a)}
         tab={tab}
         setTab={setTab}
       />
