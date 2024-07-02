@@ -190,6 +190,7 @@ const SideChat = (props: SideChatProps) => {
               onChange={(e) => setForm({ ...form, prompt: e.target.value })}
             />
             <select
+              value={form.image}
               onChange={(e) => setForm({ ...form, image: e.target.value })}
               className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
             >
@@ -214,10 +215,11 @@ const SideChat = (props: SideChatProps) => {
                 onClick={() => {
                   setShowModal(false);
                   setForm((prev) => ({
-                    ...prev,
                     name: "",
                     text: "",
                     prompt: "",
+                    image: "",
+                    className: "",
                   }));
                 }}
               >
