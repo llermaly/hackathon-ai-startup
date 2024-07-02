@@ -4,8 +4,9 @@ import {
   useMutationRunQueryWithScenario,
 } from "../hooks/query";
 import SideChat from "./side-chat";
-import Markdown from "react-markdown";
+// import Markdown from "react-markdown";
 import { AiOutlineMessage } from "react-icons/ai";
+import Markdown from "markdown-to-jsx";
 
 export const scenarioImg = {
   slack: "/images/slack.svg",
