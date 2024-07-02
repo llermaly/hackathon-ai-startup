@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { exampleActions } from "./actions";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { scenarioClassName, scenarioImg } from "./chat";
 
 interface SideChatProps {
   handleSubmitMessage: (message: string) => void;
@@ -20,15 +22,31 @@ const HistoryItem = ({ name, text, ...rest }) => {
   );
 };
 
-const ActionItem = ({ name, text, img, className = "", ...rest }) => {
+const ActionItem = ({
+  name,
+  text,
+  image,
+  className = "",
+  onDelete,
+  ...rest
+}) => {
   return (
     <div
       className={`mb-4 w-full transform bg-gray-100 rounded-md cursor-pointer entry ${className}`}
       {...rest}
     >
-      <div className="p-3 pb-3.5 grid grid-cols-12 gap-4">
+      <div className="flex justify-end px-3 pt-3">
+        <FaRegTrashAlt
+          className="text-red-500 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+        />
+      </div>
+      <div className="px-3 pb-3.5 grid grid-cols-12 gap-x-4">
         <div className="flex items-center justify-center col-span-2">
-          <img src={img} className="w-10 h-10 rounded-md" />
+          <img src={image} className="w-10 h-10 rounded-md" />
         </div>
         <div className="col-span-10 break-words">
           <span className="text-sm font-semibold text-gray-600">{name}</span>
@@ -43,13 +61,48 @@ const SideChat = (props: SideChatProps) => {
   const { tab, setTab } = props;
 
   const [lastMessages, setLastMessages] = React.useState<string[]>([]);
+  const [quickActions, setQuickActions] = React.useState<any[]>([]);
+
+  const [showModal, setShowModal] = React.useState(false);
+
+  const [form, setForm] = React.useState({
+    name: "",
+    text: "",
+    prompt: "",
+    image: "",
+    className: "",
+  });
 
   useEffect(() => {
     const lastMessages = localStorage.getItem("lastMessages");
     if (lastMessages) {
       setLastMessages(JSON.parse(lastMessages)?.reverse());
     }
+
+    const quickActions = localStorage.getItem("quickActions");
+    if (quickActions) {
+      setQuickActions(JSON.parse(quickActions));
+    }
   }, []);
+
+  const handleCreateAction = () => {
+    const currentActions = localStorage.getItem("quickActions");
+    const actions = currentActions ? JSON.parse(currentActions) : [];
+
+    const newAction = {
+      ...form,
+      image: scenarioImg[form.image],
+      className: scenarioClassName[form.image],
+    };
+
+    actions.push(newAction);
+
+    localStorage.setItem("quickActions", JSON.stringify(actions));
+    setQuickActions(actions);
+
+    setForm({ name: "", text: "", prompt: "", image: "", className: "" });
+    setShowModal(false);
+  };
 
   return (
     <div className="flex-col hidden pr-4 border-r-2 border-gray-100 sidebar lg:flex flex-2 max-w-[450px] w-full">
@@ -102,14 +155,91 @@ const SideChat = (props: SideChatProps) => {
             </button>
           </>
         )}
+        <button
+          className="px-4 py-2 mb-4 text-sm text-white transform bg-blue-600 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
+          onClick={() => setShowModal(true)}
+        >
+          Create new
+        </button>
+        <dialog
+          id="my_modal_2"
+          className={`modal ${showModal ? "modal-open" : ""}`}
+        >
+          <div className="text-black bg-white modal-box">
+            <h3 className="text-lg font-bold">Add new quick action</h3>
+            <input
+              type="text"
+              placeholder="Name"
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              value={form.text}
+              onChange={(e) => setForm({ ...form, text: e.target.value })}
+            />
+            <textarea
+              placeholder="Prompt"
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              value={form.prompt}
+              rows={3}
+              onChange={(e) => setForm({ ...form, prompt: e.target.value })}
+            />
+            <select
+              onChange={(e) => setForm({ ...form, image: e.target.value })}
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+            >
+              <option value="">Select image</option>
+              <option value="monday">Monday</option>
+              <option value="slack">Slack</option>
+              <option value="email">Email</option>
+              <option value="stripe">Stripe</option>
+            </select>
+            <div className="flex gap-8">
+              <button
+                disabled={
+                  !form.name || !form.text || !form.prompt || !form.image
+                }
+                className="w-2/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-blue-600 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
+                onClick={handleCreateAction}
+              >
+                Create
+              </button>
+              <button
+                className="w-1/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-red-500 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
+                onClick={() => {
+                  setShowModal(false);
+                  setForm({
+                    name: "",
+                    text: "",
+                    prompt: "",
+                    image: "",
+                    className: "",
+                  });
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </dialog>
         {tab === "quick" && (
           <>
-            {exampleActions?.map((ac, index) => (
+            {quickActions?.map((ac, index) => (
               <ActionItem
                 key={index}
                 {...ac}
                 onClick={() => props.handleSubmitMessage(ac.prompt)}
-                onDelete={() => {}}
+                onDelete={() => {
+                  const actions = quickActions.filter(
+                    (action) => action.name !== ac.name
+                  );
+                  localStorage.setItem("quickActions", JSON.stringify(actions));
+                  setQuickActions(actions);
+                }}
               />
             ))}
           </>

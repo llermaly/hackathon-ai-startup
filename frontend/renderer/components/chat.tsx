@@ -7,11 +7,18 @@ import SideChat from "./side-chat";
 import Markdown from "react-markdown";
 import { AiOutlineMessage } from "react-icons/ai";
 
-const scenarioImg = {
+export const scenarioImg = {
   slack: "/images/slack.svg",
   email: "/images/email.svg",
   monday: "/images/monday.svg",
   stripe: "/images/stripe.jpg",
+};
+
+export const scenarioClassName = {
+  slack: "gradient-yellow",
+  email: "gradient-blue",
+  monday: "gradient-green",
+  stripe: "gradient-purple",
 };
 
 const shortenMessage = (message: string) => {
