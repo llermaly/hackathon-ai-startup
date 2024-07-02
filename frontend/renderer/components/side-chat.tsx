@@ -212,13 +212,12 @@ const SideChat = (props: SideChatProps) => {
                 className="w-1/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-red-500 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
                 onClick={() => {
                   setShowModal(false);
-                  setForm({
+                  setForm((prev) => ({
+                    ...prev,
                     name: "",
                     text: "",
                     prompt: "",
-                    image: "",
-                    className: "",
-                  });
+                  }));
                 }}
               >
                 Close
