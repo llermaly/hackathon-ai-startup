@@ -228,6 +228,11 @@ const SideChat = (props: SideChatProps) => {
         </dialog>
         {tab === "quick" && (
           <>
+            {quickActions.length === 0 && (
+              <div className="flex items-center justify-center w-full">
+                <p className="text-gray-400">No quick actions yet</p>
+              </div>
+            )}
             {quickActions?.map((ac, index) => (
               <ActionItem
                 key={index}
