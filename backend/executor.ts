@@ -3,6 +3,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import axios from "axios";
 import { PlanAndExecuteAgentExecutor } from "langchain/experimental/plan_and_execute";
 import { z } from "zod";
+import { createOpenAIFunctionsAgent, AgentExecutor } from "langchain/agents";
+import { pull } from "langchain/hub";
+import type { ChatPromptTemplate } from "@langchain/core/prompts";
 
 interface FetchProps {
   headers: any;
@@ -241,6 +244,24 @@ const llm = new ChatOpenAI({
 });
 
 export const getExecutor = async (tools: any) => {
+  const prompt = await pull<ChatPromptTemplate>(
+    "hwchase17/openai-functions-agent"
+  );
+
+  const agent = await createOpenAIFunctionsAgent({
+    llm,
+    tools,
+    prompt,
+  });
+
+  const agentExecutor = new AgentExecutor({
+    agent,
+    tools,
+    verbose: true,
+  });
+
+  return agentExecutor;
+
   return await PlanAndExecuteAgentExecutor.fromLLMAndTools({
     llm,
     tools,
