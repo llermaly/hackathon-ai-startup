@@ -20,7 +20,7 @@ const shortenMessage = (message: string) => {
 
 interface MessageProps {
   text: string;
-  handleClickCitedMessage?: (message: string, scenario: string) => void;
+  handleClickCitedMessage?: (message: string) => void;
   disableCites?: boolean;
 }
 
@@ -68,38 +68,12 @@ const BotMessage = (props: MessageProps) => {
         </span>
 
         {!props.disableCites && (
-          <div className="flex items-center gap-4 pt-2">
-            <img
-              src="/images/slack.svg"
-              className="w-5 h-5 bg-gray-100 p-0.5 rounded-md hover:scale-105 cursor-pointer"
-              alt="slack"
+          <div className="flex items-center gap-4 pt-0.5">
+            <AiOutlineMessage
               onClick={() => {
-                props.handleClickCitedMessage?.(props.text, "slack");
+                props.handleClickCitedMessage?.(props.text);
               }}
-            />
-            <img
-              src="/images/email.svg"
-              className="w-5 h-5 bg-gray-100 p-0.5 rounded-md hover:scale-105 cursor-pointer"
-              alt="email"
-              onClick={() => {
-                props.handleClickCitedMessage?.(props.text, "email");
-              }}
-            />
-            <img
-              src="/images/monday.svg"
-              className="w-5 h-5 bg-gray-100 p-0.5 rounded-md hover:scale-105 cursor-pointer"
-              alt="monday"
-              onClick={() => {
-                props.handleClickCitedMessage?.(props.text, "monday");
-              }}
-            />
-            <img
-              src="/images/stripe.jpg"
-              className="w-5 h-5 bg-gray-100 p-0.5 rounded-md hover:scale-105 cursor-pointer"
-              alt="stripe"
-              onClick={() => {
-                props.handleClickCitedMessage?.(props.text, "stripe");
-              }}
+              className="w-5 h-5 text-gray-400 border p-0.5 rounded-md hover:scale-105 cursor-pointer"
             />
           </div>
         )}
@@ -157,18 +131,15 @@ const Chat = () => {
 
     runQuery.mutate(
       {
-        query:
-          citedMessage && scenario
-            ? `Given the previous message: "${citedMessage}", use the following scenario "${scenario}" to answer this new message: ${message}.`
-            : message,
+        query: citedMessage
+          ? `Given the previous message: "${citedMessage}"\nAnswer this new message: ${message}.`
+          : message,
       },
       {
         onSuccess: (data) => {
           let text: string =
             data?.result ||
             "Unexpected error occurred. Please try again later.";
-
-          console.log({ data });
 
           setMessages((prev) => [...prev, { text, type: "bot" }]);
         },
@@ -177,6 +148,7 @@ const Chat = () => {
 
     if (message === inputValue) {
       setInputValue("");
+      setCitedMessage("");
     }
   };
 
@@ -184,9 +156,8 @@ const Chat = () => {
     setUpdateSideChat((prev) => (prev === "true" ? "false" : "true"));
   };
 
-  const handleClickCitedMessage = (message: string, scenario: string) => {
+  const handleClickCitedMessage = (message: string) => {
     setCitedMessage(message);
-    setScenario(scenario);
   };
 
   const handleResetCitedMessage = () => {
@@ -207,7 +178,7 @@ const Chat = () => {
     <>
       <SideChat
         key={updateSideChat}
-        handleSubmitMessage={(m) => setInputValue(m)}
+        handleSubmitMessage={(m) => handleSubmitMessage(m)}
         tab={tab}
         setTab={setTab}
       />
