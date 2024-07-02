@@ -13,6 +13,45 @@ interface FetchProps {
   body?: any;
 }
 
+const statusDict: any = {
+  "working on it": 0,
+  done: 1,
+  stuck: 2,
+};
+
+const GET_TASKS_BY_STATUS_QUERY = (boardId: string, status: string) => `query {
+  boards(ids: ${boardId}) {
+    allItems: items_page(
+      limit: 10
+      query_params: {rules: [{column_id: "project_status", compare_value: [${statusDict[status]}]}]}
+    ) {
+      cursor
+      items {
+        id
+        name
+        itemData: column_values {
+          column {
+            id
+            title
+          }
+          text
+        }
+        creator {
+          email
+        }
+        updates {
+          text_body
+          created_at
+          creator {
+            name
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
 const GET_TASKS_QUERY = (boardId: string) => `query {
   boards (ids: ${boardId}){
     allItems:items_page (limit: 10) {
@@ -29,10 +68,7 @@ const GET_TASKS_QUERY = (boardId: string) => `query {
       }
     }
   }
-}
-
-
-`;
+}`;
 
 const GET_MONDAY_BOARDS = `query {
   boards{
@@ -106,7 +142,7 @@ export const buildTools = ({
     },
   }),
   new DynamicStructuredTool({
-    name: "get-monday-tasks",
+    name: "get-all-monday-tasks",
     description:
       "Get all the tasks in Monday, receives a boardId as input, if you don't know the boardId you can use the get-monday-boards tool to get it",
     schema: z.object({
@@ -132,8 +168,110 @@ export const buildTools = ({
           dueDate: findColumn(i.itemData, "Due Date"),
           owner: findColumn(i.itemData, "Owner"),
           timeline: findColumn(i.itemData, "Timeline"),
+          url: `https://llermaly.monday.com/boards/${boardId}/pulses/${i.id}`,
         }))
       );
+    },
+  }),
+  new DynamicStructuredTool({
+    name: "get-monday-tasks-by-status",
+    description:
+      "Get all the tasks in Monday by status, receives a boardId and status as input, if you don't know the boardId you can use the get-monday-boards tool to get it",
+    schema: z.object({
+      boardId: z.string(),
+      status: z.enum(["working on it", "done", "stuck"]),
+    }),
+    func: async ({ boardId, status }) => {
+      const data = await fetchMonday({
+        headers: {
+          Authorization: MONDAY_KEY,
+          "Content-Type": "application/json",
+        },
+        query: GET_TASKS_BY_STATUS_QUERY(boardId, status),
+      });
+
+      const findColumn = (itemData: any, title: string) =>
+        itemData.find((c: any) => c?.column?.title === title)?.text;
+
+      return JSON.stringify(
+        data?.data?.boards[0]?.allItems?.items?.map((i: any) => ({
+          id: i.id,
+          name: i.name,
+          status: findColumn(i.itemData, "Status"),
+          dueDate: findColumn(i.itemData, "Due Date"),
+          owner: findColumn(i.itemData, "Owner"),
+          timeline: findColumn(i.itemData, "Timeline"),
+          url: `https://llermaly.monday.com/boards/${boardId}/pulses/${i.id}`,
+          updates: i.updates?.map((u: any) => ({
+            text: u.text_body,
+            creator: u.creator?.name,
+            createdAt: u.created_at,
+          })),
+        }))
+      );
+    },
+  }),
+  new DynamicStructuredTool({
+    name: "get-slack-channels",
+    description:
+      "Get all the channels in Slack, usefull to get the channel id to use in other queries",
+    schema: z.object({}),
+    func: async ({}) => {
+      const { data } = await axios.get(
+        "https://slack.com/api/conversations.list",
+        {
+          headers: {
+            Authorization: `Bearer ${SLACK_KEY}`,
+          },
+        }
+      );
+
+      const channels = data.channels.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+      }));
+
+      return JSON.stringify(channels);
+    },
+  }),
+  new DynamicStructuredTool({
+    name: "read-slack-channel-messages",
+    description:
+      "Read all the messages in a slack channel, receives a channel id as input, if you don't know the channel id you can use the get-slack-channels tool to get it",
+    schema: z.object({
+      channelId: z.string(),
+    }),
+    func: async ({ channelId }) => {
+      const { data: users } = await axios.get(
+        "https://slack.com/api/users.list",
+        {
+          headers: {
+            Authorization: `Bearer ${SLACK_KEY}`,
+          },
+        }
+      );
+
+      const { data } = await axios.post(
+        "https://slack.com/api/conversations.history",
+        { channel: channelId },
+        {
+          headers: {
+            Authorization: `Bearer ${SLACK_KEY}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      const messages = data.messages.map((m: any) => ({
+        text: m.text,
+        user: {
+          id: m.user,
+          name: users.members.find((u: any) => u.id === m.user)?.name,
+          realName: users.members.find((u: any) => u.id === m.user)?.real_name,
+        },
+      }));
+
+      return JSON.stringify(messages?.reverse());
     },
   }),
   new DynamicStructuredTool({
