@@ -96,7 +96,7 @@ const SideChat = (props: SideChatProps) => {
       className: scenarioClassName[form.image],
     };
 
-    actions.push(newAction);
+    actions.unshift(newAction);
 
     localStorage.setItem("quickActions", JSON.stringify(actions));
     setQuickActions(actions);
