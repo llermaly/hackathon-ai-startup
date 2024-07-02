@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { exampleActions } from "./actions";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { scenarioClassName, scenarioImg } from "./chat";
-import { VscGithubAction } from "react-icons/vsc";
+import { IoMdEye } from "react-icons/io";
 
 interface SideChatProps {
   handleSubmitMessage: (message: string, aliasMessage?: string) => void;
@@ -29,6 +29,7 @@ const ActionItem = ({
   image,
   className = "",
   onDelete,
+  onView,
   ...rest
 }) => {
   return (
@@ -43,13 +44,22 @@ const ActionItem = ({
         <div className="col-span-10 break-words">
           <div className="flex items-start justify-between">
             <span className="text-sm font-semibold text-gray-600">{name}</span>
-            <FaRegTrashAlt
-              className="text-gray-900 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-            />
+            <div className="flex gap-2">
+              <FaRegTrashAlt
+                className="text-gray-600 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              />
+              <IoMdEye
+                className="text-gray-600 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onView();
+                }}
+              />
+            </div>
           </div>
           <p className="mt-1 text-xs text-gray2">{text}</p>
         </div>
@@ -63,6 +73,7 @@ const SideChat = (props: SideChatProps) => {
 
   const [lastMessages, setLastMessages] = React.useState<string[]>([]);
   const [quickActions, setQuickActions] = React.useState<any[]>([]);
+  const [disableForm, setDisableForm] = React.useState(false);
 
   const [showModal, setShowModal] = React.useState(false);
 
@@ -158,7 +169,10 @@ const SideChat = (props: SideChatProps) => {
         )}
         <button
           className="px-4 py-2 mb-4 text-sm text-white transform bg-blue-600 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setShowModal(true);
+            setDisableForm(false);
+          }}
         >
           Create new
         </button>
@@ -167,51 +181,65 @@ const SideChat = (props: SideChatProps) => {
           className={`modal ${showModal ? "modal-open" : ""}`}
         >
           <div className="text-black bg-white modal-box">
-            <h3 className="text-lg font-bold">Add new quick action</h3>
+            <h3 className="text-lg font-bold">
+              {disableForm ? form.name : "Add new quick action"}
+            </h3>
             <input
               type="text"
               placeholder="Name"
-              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              disabled={disableForm}
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md disabled:bg-gray-50"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
             <input
               type="text"
               placeholder="Description"
-              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              disabled={disableForm}
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md disabled:bg-gray-50"
               value={form.text}
               onChange={(e) => setForm({ ...form, text: e.target.value })}
             />
             <textarea
               placeholder="Prompt"
-              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
+              disabled={disableForm}
+              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md disabled:bg-gray-50"
               value={form.prompt}
               rows={3}
               onChange={(e) => setForm({ ...form, prompt: e.target.value })}
             />
-            <select
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
-            >
-              <option value="">Select image</option>
-              <option value="monday">Monday</option>
-              <option value="slack">Slack</option>
-              <option value="email">Email</option>
-              <option value="stripe">Stripe</option>
-            </select>
-            <div className="flex gap-8">
-              <button
-                disabled={
-                  !form.name || !form.text || !form.prompt || !form.image
-                }
-                className="w-2/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-blue-600 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
-                onClick={handleCreateAction}
+            {!disableForm && (
+              <select
+                value={form.image}
+                onChange={(e) => setForm({ ...form, image: e.target.value })}
+                className="w-full p-2 mt-2 text-sm bg-transparent border rounded-md"
               >
-                Create
-              </button>
+                <option value="">Select image</option>
+                <option value="monday">Monday</option>
+                <option value="slack">Slack</option>
+                <option value="email">Email</option>
+                <option value="stripe">Stripe</option>
+              </select>
+            )}
+
+            <div className="flex gap-8">
+              {!disableForm && (
+                <button
+                  disabled={
+                    !form.name || !form.text || !form.prompt || !form.image
+                  }
+                  className="w-2/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-blue-600 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
+                  onClick={handleCreateAction}
+                >
+                  Create
+                </button>
+              )}
+
               <button
-                className="w-1/3 px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-red-500 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80"
+                className={`
+                   px-4 py-2 mt-4 mb-4 text-sm text-white transform bg-red-500 rounded-md cursor-pointer disabled:hover:scale-100 disabled:cursor-default disabled:bg-gray-400 active:bg-opacity-80 ${
+                     disableForm ? "w-full" : "w-1/3"
+                   }`}
                 onClick={() => {
                   setShowModal(false);
                   setForm((prev) => ({
@@ -240,6 +268,11 @@ const SideChat = (props: SideChatProps) => {
                 key={index}
                 {...ac}
                 onClick={() => props.handleSubmitMessage(ac.prompt, ac.text)}
+                onView={() => {
+                  setForm(ac);
+                  setShowModal(true);
+                  setDisableForm(true);
+                }}
                 onDelete={() => {
                   const actions = quickActions.filter(
                     (action) => action.name !== ac.name
