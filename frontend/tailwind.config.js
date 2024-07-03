@@ -35,6 +35,7 @@ module.exports = {
       },
       gray1: "#555555",
       gray2: "#727272",
+      appPurple: "#7158B4",
     },
     fontFamily: {
       sans: ["Helvetica Now Display", "Helvetica", "Arial", "sans-serif"],

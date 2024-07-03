@@ -94,17 +94,17 @@ const UserMessage = (props: MessageProps) => {
   return (
     <div className="flex flex-col items-end mb-4 message">
       <div className="flex items-center justify-end">
-        <span className="px-2 text-sm text-blue-400">User</span>
-        <div className="h-[32px] px-[2px] pt-1.5 bg-blue-600 rounded-full">
+        <span className="px-2 text-sm text-appPurple">User</span>
+        <div className="h-[32px] px-[2px] pt-1.5 bg-appPurple rounded-full">
           <img
-            className="p-1 bg-blue-600 rounded-full"
+            className="p-1 rounded-full bg-appPurple"
             src="/images/bot.svg"
             alt="chat-bot"
           />
         </div>
       </div>
-      <div className="flex px-2 py-1 mt-2 bg-blue-200 rounded-md rounded-tr-none">
-        <span className="text-sm text-blue-600">{props.text}</span>
+      <div className="flex px-2 py-1 mt-2 bg-purple-100 rounded-md rounded-tr-none">
+        <span className="text-sm text-appPurple">{props.text}</span>
       </div>
     </div>
   );
@@ -193,9 +193,9 @@ const Chat = () => {
         tab={tab}
         setTab={setTab}
       />
-      <div className="flex flex-col flex-1 w-full pl-4">
+      <div className="flex flex-col flex-1 w-full p-4">
         <div className="flex mb-6 justify-between items-center border-b-2 border-gray-100 h-[58px]">
-          <h2 className="py-2 text-xl font-light text-gray-400">Chat</h2>
+          <h2 className="py-2 text-xl font-light text-black">Chat</h2>
           <div>
             <button
               onClick={() => {
@@ -203,7 +203,7 @@ const Chat = () => {
                   { text: "Hello, how can I help you today ?", type: "bot" },
                 ]);
               }}
-              className={`px-3 py-1.5 text-sm  bg-gray-200 text-gray-700 rounded-md active:opacity-80`}
+              className={`px-3 py-1.5 text-sm  bg-gray-300 text-white rounded-md active:opacity-80`}
             >
               Reset chat
             </button>

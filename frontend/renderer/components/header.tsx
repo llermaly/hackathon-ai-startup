@@ -34,9 +34,9 @@ const Header = () => {
 
   return (
     <div className="flex flex-row px-1 py-4 flex-2">
-      <h1 className="text-lg font-semibold text-gray-800">Agile Loop</h1>
+      <h1 className="text-lg font-semibold text-white">Pacepeak</h1>
       <div className="items-center flex-1 text-right">
-        <span className="inline-block font-light text-gray2">
+        <span className="inline-block font-light text-white">
           <div className="flex items-center gap-2">
             <b>{getStatusText()}</b>
             <span

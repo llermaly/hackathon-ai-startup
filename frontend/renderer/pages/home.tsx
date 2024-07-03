@@ -9,8 +9,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Agile Loop Hackathon</title>
-        <meta name="description" content="Agile Loop Hackathon" />
+        <title>Lablab Next Hackathon</title>
+        <meta name="description" content="Lablab Next Hackathon" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="relative">
@@ -25,7 +25,7 @@ const Home: NextPage = () => {
 
             <div className="flex h-[450px]">
               <div className="flex-1 w-full h-full bg-white rounded-md shadow">
-                <div className="flex flex-col w-full h-full p-4 m-auto main-body">
+                <div className="flex flex-col w-full h-full m-auto main-body">
                   <div className="flex flex-col flex-1 main">
                     <div className="flex flex-1 h-full">
                       <Chat />
