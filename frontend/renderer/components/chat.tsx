@@ -212,7 +212,7 @@ const Chat = () => {
 
         <div
           ref={scrollRef}
-          className="flex-1 overflow-auto messages pr-4 h-full max-h-[250px]"
+          className="flex-1 h-full pr-4 overflow-auto messages h-chat"
         >
           {messages.map((message, index) => {
             if (message.type === "bot") {

@@ -337,6 +337,18 @@
   );
 }
 
+.h-card {
+  height: calc(100vh - 100px);
+}
+
+.h-chat {
+  max-height: calc(100vh - 350px);
+}
+
+.h-side-chat {
+  max-height: calc(100vh - 300px);
+}
+
 .loader {
   width: 24px;
   height: 24px;

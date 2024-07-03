@@ -133,7 +133,7 @@ const SideChat = (props: SideChatProps) => {
             </button>
           </div>
         </div>
-        <div className="w-[365px] flex-1 max-h-[300px] h-full pt-4 mt-4 overflow-auto border-t-2 border-gray-100 pr-2">
+        <div className="w-[365px] flex-1 h-side-chat h-full pt-4 mt-4 overflow-auto border-t-2 border-gray-100 pr-2">
           {tab === "history" && (
             <>
               <button
