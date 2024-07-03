@@ -30,6 +30,11 @@ if (isProd) {
     e.preventDefault();
     require("electron").shell.openExternal(url);
   });
+
+  mainWindow.webContents.on("will-navigate", function (e, url) {
+    e.preventDefault();
+    require("electron").shell.openExternal(url);
+  });
 })();
 
 app.on("window-all-closed", () => {
