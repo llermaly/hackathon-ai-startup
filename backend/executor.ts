@@ -59,11 +59,21 @@ const GET_TASKS_QUERY = (boardId: string) => `query {
       items {
         id
         name
-         itemData:column_values {
+        itemData:column_values {
           column{
             title
           }
           text
+        }
+        creator {
+          email
+        }
+        updates {
+          text_body
+          created_at
+          creator {
+            name
+          }
         }
       }
     }
@@ -169,6 +179,11 @@ export const buildTools = ({
           owner: findColumn(i.itemData, "Owner"),
           timeline: findColumn(i.itemData, "Timeline"),
           url: `https://llermaly.monday.com/boards/${boardId}/pulses/${i.id}`,
+          updates: i.updates?.map((u: any) => ({
+            text: u.text_body,
+            creator: u.creator?.name,
+            createdAt: u.created_at,
+          })),
         }))
       );
     },
