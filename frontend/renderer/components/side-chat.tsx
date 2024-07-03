@@ -275,7 +275,7 @@ const SideChat = (props: SideChatProps) => {
           )}
         </div>
       </div>
-      <div className="absolute bottom-0 flex justify-center w-full gap-2 py-4 bg-appPurple bg-opacity-10 rounded-bl-md ">
+      <div className="absolute bottom-0 justify-center hidden w-full gap-2 py-4 lg:flex bg-appPurple bg-opacity-10 rounded-bl-md ">
         <button
           onClick={() => setTab("quick")}
           className={`px-3 py-1.5 text-sm bg-white shadow-sm text-appPurple border  ${
