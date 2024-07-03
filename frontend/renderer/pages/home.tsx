@@ -20,7 +20,7 @@ const Home: NextPage = () => {
           className="absolute w-screen h-screen"
         />
         <div className="absolute w-full p-4 max-w-screen ">
-          <div className="w-full px-4 pb-6 mx-auto bg-white rounded-md bg-opacity-40">
+          <div className="w-full px-4 pb-6 mx-auto bg-white rounded-md bg-opacity-10">
             <Header />
 
             <div className="flex h-[450px]">

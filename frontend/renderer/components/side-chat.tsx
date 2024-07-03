@@ -279,7 +279,9 @@ const SideChat = (props: SideChatProps) => {
         <button
           onClick={() => setTab("quick")}
           className={`px-3 py-1.5 text-sm bg-white shadow-sm text-appPurple border  ${
-            tab === "quick" ? "font-semibold" : "font-light"
+            tab === "quick"
+              ? "font-semibold bg-white"
+              : "font-light bg-appPurple bg-opacity-10 text-opacity-50"
           } rounded-md active:opacity-80`}
         >
           Quick actions
@@ -287,7 +289,9 @@ const SideChat = (props: SideChatProps) => {
         <button
           onClick={() => setTab("history")}
           className={`px-3 py-1.5 text-sm bg-white shadow-sm text-appPurple border  ${
-            tab === "history" ? "font-semibold" : "font-light"
+            tab === "history"
+              ? "font-semibold bg-white"
+              : "font-light bg-appPurple bg-opacity-10 text-opacity-50"
           } rounded-md active:opacity-80`}
         >
           History
